@@ -1,0 +1,81 @@
+clc; 
+clear;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                              Descripción:                               %
+% Extrae puntos de un conjunto de imágenes de una trayectoria y crea una  %
+% tabla (X,Y) de las coordenadas de los puntos extraidos de dicha         %
+% trayectoria.                                                            %
+%                                                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+video = VideoReader('D:\Mis Documentos\Maestría UABC\TESIS MAESTRIA\Saltos\Antepenultimo Salto b.MP4'); %285
+%video = VideoReader('D:\Mis Documentos\Maestría UABC\TESIS MAESTRIA\Saltos\Penultimo Salto b.MP4'); %3000
+%video = VideoReader('D:\Mis Documentos\Maestría UABC\TESIS MAESTRIA\Saltos\Ultimo Salto b.MP4'); %1830
+
+%video = VideoReader('D:\Mis Documentos\Maestría UABC\TESIS MAESTRIA\Robot\ROBOT.avi');
+
+%video = VideoReader('D:\Mis Documentos\Maestría UABC\TESIS MAESTRIA\Videos Pendulo\Todas encendidas.wmv'); % 305 y 100 no detecta
+%video = VideoReader('D:\Mis Documentos\Maestría UABC\TESIS MAESTRIA\Videos Pendulo\Dos derecha.wmv');
+%video = VideoReader('D:\Mis Documentos\Maestría UABC\TESIS MAESTRIA\Videos Pendulo\Dos Izquierda.wmv');
+
+N = video.NumberOfFrames; %Total de cuadros del video
+
+Rate = video.FrameRate;
+Duracion = video.Duration;
+
+vidAlto = video.Height;
+vidAncho = video.Width;
+
+%Creación de un fondo blanco ("lienzo" donde se graficará la trayectoria).
+W = ones([vidAlto, vidAncho]);
+
+indices = [];
+cxAnt = [];
+cyAnt = [];
+%Lectura de las imágenes.
+%fondo = detBack(video);
+for i = 285:N                              %Desde 1 hasta el total de imagenes
+    imagen = read(video,i);     %Lee imagen en turno 
+    C = salto(imagen);                  %Obtiene los centroides de los objetos con el uso de la función Salto
+    if (~isempty(C))                      %Pregunta si la matriz de centroides C no esta vacia, o sea, si se ha detectado al menos una centroide en la imagen en turno
+        C = round (C);                    %Redondea los centroides al pixel mas cercano.
+        B = size(C,1);                    %Obtiene el numero de filas de la matriz de centorides para graficarla
+        
+%         cxAnt = [cxAnt ; C(:,1)];
+%         cyAnt = [cyAnt ; C(:,2)];        %Si me quiero ahorrar un for pero no me dejaría poner límites a las imágenes para uqe excluya regiones que no son de interés
+%         p = i* ones(size(C,1),1);
+%         indices = [indices ; p];
+
+        for j = 1:B                       %Desde 1 hasta el numero de renglones de la matriz de centroides.
+            %if (((C(j,1)<400 || C(j,1)>450) || (C(j,2)<250 || C(j,2)>350)) && (C(j,1)>320 && C(j,1)<530)) %Descomentar para péndulo.
+            %if ((C(j,2)<302) && (C(j,1)>200) && ((C(j,2)>140))) %&& ((C(j,1)<600)&&(C(j,2)<260))  %Si el renglón de la imagen es menor a 302 (en este caso para una resolución de 854 columnas x 480 filas y para el video de salto) 
+                W(C(j,2),C(j,1)) = 0;     %El pixel correspondiente al centroide de la fila en turno sera negro dentro del fondo blanco creado.
+                cxAnt = [cxAnt ; C(j,1)];
+                cyAnt = [cyAnt ; C(j,2)];
+                indices = [indices ; i];
+            %end
+         end
+    end
+end
+
+imshow(W);                                %Mostrar imagen resultante.
+
+%Se pasan datos a vectores de puntos.
+X = cxAnt;
+Y = cyAnt;
+
+%Y se "voltea" porque en una imagen las coordenadas estan al revés de las
+%coordenadas de un sistema (X,Y) convencional.
+Y = size(W,1) - Y;
+
+%Se guardan los datos en una matriz llamada Puntos
+Puntos = [X Y indices];
+
+%Grafica los puntos.
+figure
+
+plot(X, Y, 'kx', 'MarkerSize', 10);
+grid on
