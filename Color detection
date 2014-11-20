@@ -1,0 +1,29 @@
+clc;
+clear;
+ 
+imagen = imread('nina.jpg');
+ 
+imshow(imagen)
+ 
+imagenGris = rgb2gray(imagen);
+ 
+imR = double(imagen(:,:,1));
+imG = double(imagen(:,:,2));
+imB = double(imagen(:,:,3));
+ 
+imagenR = (imR-imG-imB);
+ 
+imagen_binaria = imagenR > 50;
+ 
+imagen_binaria_filtrada = medfilt2(imagen_binaria);
+ 
+mascara = 1-imagen_binaria_filtrada;
+ 
+imagen_roja = double(imagenGris)/255;
+imagen_verde = double(imagenGris) .* mascara/255;
+imagen_azul = double(imagenGris) .* mascara/255;
+ 
+imagen_final = cat(3,imagen_roja,imagen_verde,imagen_azul);
+ 
+figure
+imshow(imagen_final)
