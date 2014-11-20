@@ -1,0 +1,54 @@
+function[centroids,numObjects] = detectar_objeto(I)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Descripción:                               %
+% Obtiene el centroide de un objeto en una secuencia de imágenes         %
+% mediante detección de color dado un umbral.                            %
+%                                                                        %
+% Entradas:                                                              %
+%                                                                        %
+% * I: Imagen de entrada.                                                %
+%                                                                        %
+% Salidas:                                                               %
+%                                                                        %
+% * centroids: Coordenadas del centroide detectado.                      %
+% * numObjects: número de objetos detectados.                            %
+%                                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  % Separación de imagen RGB en sus tres componentes Rojo, Verde y Azul
+  imR=double(I(:,:,1));
+  imG=double(I(:,:,2));
+  imB=double(I(:,:,3));
+  [N,M]=size(imG);
+  
+  % Alocación de memoria para reducción de costo computacional
+  Y=zeros(N,M);
+  for i=1:N;
+      for j=1:M;
+          if((imR(i,j)>TR1 && imR(i,j)<TR2) && (imG(i,j)>TG1 && imG(i,j)<TG2) && (imB(i,j)>TB1 && imB(i,j)<TB2))
+              Y(i,j)=1;
+          else
+              Y(i,j)=0;
+          end
+      end
+  end
+  
+  % En este punto se tiene una imagen binaria
+  
+  %Aplica cerradura.
+  se=strel('disk',20);
+  CY=imclose(Y,se);
+  bw=bwareaopen(CY,20);
+  
+  bw=imfill(bw,'holes');
+  
+  %Extrae centroides de la imagen resultante
+  L=logical(bw);
+  s=regionprops(L,'Area','centroid');
+  centroids=cat(1,s.Centroid);
+  
+  [labeled,numObjects]=bwlabel(bw,8);
+end
