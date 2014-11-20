@@ -1,3 +1,14 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             Descripción:                               %
+% Identifica un color dentro de una imágen, las partes de la imagen      %
+% que no contengan ese color quedan en niveles de gris                   %
+%                                                                        %
+% Para una explicación detallada puedes ir a:                            %
+% https://www.youtube.com/watch?v=QJPu7R1K3CU                            %
+%                                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clc;
 clear;
  
