@@ -1,0 +1,24 @@
+clc; clear;
+
+im_entrada = imread('hormigas.tif');
+
+imshow(im_entrada)
+
+[m,n] = size(im_entrada);
+
+im_salida = ones(m,n);
+
+T = 100;
+
+for i = 1:m
+    for j = 1:n
+        if(im_entrada(i,j) > T)
+            im_salida(i,j) = 0;
+        else
+            im_salida(i,j) = 1;
+        end
+    end
+end
+
+figure
+imshow(im_salida)
