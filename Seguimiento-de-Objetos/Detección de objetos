@@ -1,4 +1,4 @@
-function[centroids,numObjects] = detectar_objeto(I)
+function[centroids] = detectar_objeto(I)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,16 +39,12 @@ function[centroids,numObjects] = detectar_objeto(I)
   % En este punto se tiene una imagen binaria
   
   %Aplica cerradura.
-  se=strel('disk',20);
+  se=strel('disk',10);
   CY=imclose(Y,se);
   bw=bwareaopen(CY,20);
   
-  bw=imfill(bw,'holes');
-  
   %Extrae centroides de la imagen resultante
-  L=logical(bw);
-  s=regionprops(L,'Area','centroid');
+  s=regionprops(L,'centroid');
   centroids=cat(1,s.Centroid);
-  
-  [labeled,numObjects]=bwlabel(bw,8);
+
 end
