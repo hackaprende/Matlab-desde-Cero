@@ -1,6 +1,3 @@
-clc; 
-clear;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                              Descripción:                               %
@@ -11,57 +8,31 @@ clear;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-video = VideoReader('PATH AL VIDEO A CARGAR');
+clc; clear;
 
-N = video.NumberOfFrames; % Total de cuadros del video
+video_entrada = VideoReader('C:\Users\viper_000\Desktop\Pendulo.wmv');
+N = video_entrada.NumberOfFrames;
 
-Rate = video.FrameRate;
-Duracion = video.Duration;
+Cx = [];
+Cy = [];
 
-vidAlto = video.Height;
-vidAncho = video.Width;
+for i = 1:N
+imagen = read(video_entrada,i);
+C = deteccion_de_objetos(imagen);
 
-%Creación de un fondo blanco ("Lienzo" donde se graficará la trayectoria).
-W = ones([vidAlto, vidAncho]);
+if(~isempty(C))
 
-indices = [];
-cxAnt = [];
-cyAnt = [];
+C = round(C);
+Cx = [Cx ; C(:,1)];
+Cy = [Cy ; C(:,2)];
 
-%Lectura de las imágenes.
-%fondo = detBack(video);
-for i = 1:N                              %Desde 1 hasta el total de imagenes
-    imagen = read(video,i);             %Lee imagen en turno 
-    C = detectar_objeto(imagen);        %Obtiene los centroides de los objetos con el uso de la función Salto
-    if (~isempty(C))                    %Pregunta si la matriz de centroides C no esta vacia, o sea, si se ha detectado al menos una centroide en la imagen en turno
-        C = round (C);                    %Redondea los centroides al pixel mas cercano.
-        B = size(C,1);                    %Obtiene el numero de filas de la matriz de centorides para graficarla
-
-        for j = 1:B                       %Desde 1 hasta el numero de renglones de la matriz de centroides.
-                W(C(j,2),C(j,1)) = 0;     %El pixel correspondiente al centroide de la fila en turno sera negro dentro del fondo blanco creado.
-                cxAnt = [cxAnt ; C(j,1)];
-                cyAnt = [cyAnt ; C(j,2)];
-                indices = [indices ; i];
-            %end
-         end
-    end
+end
 end
 
-imshow(W);                                %Mostrar imagen resultante.
+X = Cx;
+Y = Cy;
 
-%Se pasan datos a vectores de puntos.
-X = cxAnt;
-Y = cyAnt;
+Y = video_entrada.Height - Y;
 
-%Y se "voltea" porque en una imagen las coordenadas estan al revés de las
-%coordenadas de un sistema (X,Y) cartesiano convencional.
-Y = size(W,1) - Y;
-
-%Se guardan los datos en una matriz llamada Puntos
-Puntos = [X Y indices];
-
-%Grafica los puntos.
-figure
-
-plot(X, Y, 'kx', 'MarkerSize', 10);
+plot(X,Y,'kx','MarkerSize',10);
 grid on
